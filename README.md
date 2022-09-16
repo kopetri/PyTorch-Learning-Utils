@@ -1,4 +1,4 @@
-# PyTorch + Lighting Utilities
+# PyTorch + Lightning Utilities
 
 Collection of methods and algorithms for pytorch and pytorch lightning development.
 
