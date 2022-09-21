@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import pytorch_lightning as pl
 
 class Trainer(object):
-    def __init__(self, project_name, log_every_n_steps=50, *args, **kwargs):
+    def __init__(self, project_name, log_every_n_steps=50):
         self.project_name = project_name
         self.parser = ArgumentParser("Training of {}".format(project_name))
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
@@ -91,8 +91,7 @@ class Trainer(object):
             min_epochs=self.args.min_epochs,
             max_epochs=self.args.max_epochs,
             logger=logger,
-            callbacks=callbacks,
-            *args, **kwargs
+            callbacks=callbacks
         )
         return self.args
 
