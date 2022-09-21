@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 
 class Trainer(object):
     def __init__(self, project_name, log_every_n_steps=50, *args, **kwargs):
+        self.project_name = project_name
         self.parser = ArgumentParser("Training of {}".format(project_name))
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
         self.parser.add_argument('--precision', default=16,   type=int, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
@@ -53,7 +54,7 @@ class Trainer(object):
         if self.args.name is None or self.args.dev:
             logger = None
         else:
-            logger = pl.loggers.WandbLogger(project=project_name, name=self.args.name)
+            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.args.name)
         ###########################################################################
 
         #################### ADD CALLBACKS ########################################
