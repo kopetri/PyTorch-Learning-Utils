@@ -4,7 +4,7 @@ import torch
 from argparse import ArgumentParser
 import pytorch_lightning as pl
 
-class Trainer(object):
+class Trainer(pl.Trainer):
     def __init__(self, project_name):
         self.project_name = project_name
         self.parser = ArgumentParser("Training of {}".format(project_name))
@@ -20,48 +20,48 @@ class Trainer(object):
         self.parser.add_argument('--early_stop_patience', default=0, type=int, help='Stop training after n epochs with ne val_loss improvement.')
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
-        self.trainer = None
+        self.__initialized__ = False
+        self.__args__ = None
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
     def setup(self):
-        self.arguments = self.parser.parse_args()
+        self.__args__ = self.parser.parse_args()
     
-
-        if self.arguments.detect_anomaly:
+        if self.__args__.detect_anomaly:
             print("Enabling anomaly detection")
             torch.autograd.set_detect_anomaly(True)
         
         # windows safe
         if sys.platform in ["win32"]:
-            self.arguments.worker = 0
+            self.__args__.worker = 0
 
         # Manage Random Seed
-        if self.arguments.seed is None: # Generate random seed if none is given
-            self.arguments.seed = random.randrange(4294967295) # Make sure it's logged
-        pl.utilities.seed.seed_everything(self.arguments.seed)
+        if self.__args__.seed is None: # Generate random seed if none is given
+            self.__args__.seed = random.randrange(4294967295) # Make sure it's logged
+        pl.utilities.seed.seed_everything(self.__args__.seed)
 
         # append stats to hparameter file
-        yaml = self.arguments.__dict__
+        yaml = self.__args__.__dict__
         yaml.update({
-                'random_seed': self.arguments.seed,
+                'random_seed': self.__args__.seed,
                 'gpu_name': torch.cuda.get_device_name(0),
                 'gpu_capability': torch.cuda.get_device_capability(0)
                 })
 
 
         #################### ADD LOGGING   ########################################
-        if self.arguments.name is None or self.arguments.dev:
+        if self.__args__.name is None or self.__args__.dev:
             logger = None
         else:
-            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.arguments.name)
+            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.__args__.name)
         ###########################################################################
 
         #################### ADD CALLBACKS ########################################
         callbacks = []
 
-        if self.arguments.learning_rate_decay and logger:
+        if self.__args__.learning_rate_decay and logger:
             callbacks += [pl.callbacks.lr_monitor.LearningRateMonitor()]
 
         callbacks += [pl.callbacks.ModelCheckpoint(
@@ -72,30 +72,28 @@ class Trainer(object):
             mode='min'
         )]
 
-        if self.arguments.early_stop_patience > 0:
+        if self.__args__.early_stop_patience > 0:
             callbacks += [pl.callbacks.EarlyStopping(
                 monitor='valid_loss',
                 min_delta=0.00,
-                patience=self.arguments.early_stop_patience,
+                patience=self.__args__.early_stop_patience,
                 verbose=True,
                 mode='min'
             )]
         ###########################################################################
 
-        self.trainer = pl.Trainer(
-            fast_dev_run=self.arguments.dev,
+        super().__init__(
+            fast_dev_run=self.__args__.dev,
             accelerator='gpu',
             devices=1,
-            log_every_n_steps=self.arguments.log_every_n_steps,
-            overfit_batches=1 if self.arguments.overfit else 0,
-            precision=self.arguments.precision,
-            min_epochs=self.arguments.min_epochs,
-            max_epochs=self.arguments.max_epochs,
+            log_every_n_steps=self.__args__.log_every_n_steps,
+            overfit_batches=1 if self.__args__.overfit else 0,
+            precision=self.__args__.precision,
+            min_epochs=self.__args__.min_epochs,
+            max_epochs=self.__args__.max_epochs,
             logger=logger,
             callbacks=callbacks
         )
-        return self.arguments
+        return self.__args__
 
-    def fit(self, *args, **kwargs):
-        if self.trainer is None: self.setup()
-        return self.trainer.fit(*args, **kwargs)
+
