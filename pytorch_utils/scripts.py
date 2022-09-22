@@ -26,7 +26,7 @@ class Trainer(pl.Trainer):
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
-    def setup(self, mode='Train'):
+    def setup(self, train=True):
         self.__args__ = self.parser.parse_args()
     
         if self.__args__.detect_anomaly:
@@ -82,7 +82,7 @@ class Trainer(pl.Trainer):
             )]
         ###########################################################################
 
-        if mode == 'train':
+        if train:
             super().__init__(
                 fast_dev_run=self.__args__.dev,
                 accelerator='gpu',
