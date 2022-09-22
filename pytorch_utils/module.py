@@ -26,7 +26,11 @@ class LightningModule(pl.LightningModule):
         self.log("{split}_{key}".format(split=split, key=key), value, prog_bar=True, on_epoch=not split=="train", on_step=split=="train", batch_size=batch_size)
 
     def log_image(self, key, images, **kwargs):
-        if self.logger: self.logger.log_image(key=key, images=images, **kwargs)
+        if self.logger:
+            if isinstance(self.logger, pl.loggers.WandbLogger):
+                self.logger.log_image(key=key, images=images, **kwargs)
+            else:
+                print("Warning - cannot log image. Please use a WandbLogger!")
 
     def forward(self, batch, batch_idx, split):
         raise NotImplementedError()
