@@ -26,7 +26,7 @@ class Trainer(pl.Trainer):
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
-    def setup(self):
+    def setup(self, mode='Train'):
         self.__args__ = self.parser.parse_args()
     
         if self.__args__.detect_anomaly:
@@ -82,18 +82,21 @@ class Trainer(pl.Trainer):
             )]
         ###########################################################################
 
-        super().__init__(
-            fast_dev_run=self.__args__.dev,
-            accelerator='gpu',
-            devices=1,
-            log_every_n_steps=self.__args__.log_every_n_steps,
-            overfit_batches=1 if self.__args__.overfit else 0,
-            precision=self.__args__.precision,
-            min_epochs=self.__args__.min_epochs,
-            max_epochs=self.__args__.max_epochs,
-            logger=logger,
-            callbacks=callbacks
-        )
+        if mode == 'train':
+            super().__init__(
+                fast_dev_run=self.__args__.dev,
+                accelerator='gpu',
+                devices=1,
+                log_every_n_steps=self.__args__.log_every_n_steps,
+                overfit_batches=1 if self.__args__.overfit else 0,
+                precision=self.__args__.precision,
+                min_epochs=self.__args__.min_epochs,
+                max_epochs=self.__args__.max_epochs,
+                logger=logger,
+                callbacks=callbacks
+            )
+        else:
+            super().__init__(accelerator='gpu', devices=1)
         return self.__args__
 
 
