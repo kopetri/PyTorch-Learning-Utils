@@ -1,15 +1,9 @@
 import torch
+from pytorch_utils import compute_distance_between_points
 
 def chamfer_distance(S1, S2):
     def __cdist(S1, S2):
-        N = S1.shape[1]
-        M = S2.shape[1]
-        C = S1.shape[-1]
-        X = torch.repeat_interleave(S1, M, dim=1)
-        Y = S2.repeat(1, N, 1)
-
-        diff = (X-Y).reshape(-1, N, M, C)
-        dist = torch.norm(diff, dim=-1)
+        dist = compute_distance_between_points(S1, S2)
         minimum, _ = torch.min(dist, dim=-1)
         return torch.sum(minimum, dim=-1)
 
