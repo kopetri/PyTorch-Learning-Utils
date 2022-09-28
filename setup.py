@@ -22,6 +22,7 @@ setuptools.setup(
     install_requires=[
         'torch>=1.7.0',
         'pytorch_lightning>=1.6.0',
-        'wandb'
+        'wandb',
+        'pytorch-lightning-snippets@git+https://github.com/awaelchli/pytorch-lightning-snippets'
     ]
 )
