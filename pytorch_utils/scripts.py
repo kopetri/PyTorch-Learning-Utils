@@ -12,7 +12,7 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
         self.parser.add_argument('--precision', default=16,   type=int, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
         self.parser.add_argument('--dev', action='store_true', help='Activate Lightning Fast Dev Run for debugging')
-        self.parser.add_argument('--overfit', default=0 type=int, help='Set this to a number greater 0 for overfitting on few batches.')
+        self.parser.add_argument('--overfit', default=0, type=int, help='Set this to a number greater 0 for overfitting on few batches.')
         self.parser.add_argument('--min_epochs', default=10, type=int, help='Minimum number of epochs.')
         self.parser.add_argument('--max_epochs', default=50, type=int, help='Maximum number ob epochs to train')
         self.parser.add_argument('--worker', default=8, type=int, help='Number of workers for data loader')
