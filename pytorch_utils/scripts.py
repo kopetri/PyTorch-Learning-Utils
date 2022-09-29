@@ -10,6 +10,7 @@ class Trainer(pl.Trainer):
         self.project_name = project_name
         self.parser = ArgumentParser("Training of {}".format(project_name))
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
+        self.parser.add_argument('--gpus', default=-1, type=int, help='Number of gpus to use. default -1 using all gpus.')
         self.parser.add_argument('--precision', default=16,   type=int, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
         self.parser.add_argument('--dev', action='store_true', help='Activate Lightning Fast Dev Run for debugging')
         self.parser.add_argument('--overfit', default=0, type=int, help='Set this to a number greater 0 for overfitting on few batches.')
@@ -88,8 +89,8 @@ class Trainer(pl.Trainer):
         if train:
             super().__init__(
                 fast_dev_run=self.__args__.dev,
-                accelerator='gpu',
-                devices=1,
+                accelerator='gpu' if abs(self.__args__.gpus) > 0 else 'cpu',
+                devices=self.__args__.gpus,
                 log_every_n_steps=self.__args__.log_every_n_steps,
                 overfit_batches=self.__args__.overfit,
                 precision=self.__args__.precision,
