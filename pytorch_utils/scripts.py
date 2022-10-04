@@ -22,6 +22,7 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--early_stop_patience', default=0, type=int, help='Stop training after n epochs with ne val_loss improvement.')
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
+        self.parser.add_argument('--log_model', default=1, type=int, help='Enable model logging to WandB.')
         self.__initialized__ = False
         self.__args__ = None
 
@@ -57,13 +58,13 @@ class Trainer(pl.Trainer):
         if self.__args__.name is None or self.__args__.dev:
             logger = None
         else:
-            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.__args__.name)
+            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.__args__.name, log_model=self.__args__.log_model)
         ###########################################################################
 
         #################### ADD CALLBACKS ########################################
         callbacks = []
 
-        callbacks += [CodeSnapshot(filetype=[".py"])]
+        #callbacks += [CodeSnapshot(filetype=[".py"])]
 
         if self.__args__.learning_rate_decay and logger:
             callbacks += [pl.callbacks.lr_monitor.LearningRateMonitor()]
@@ -89,8 +90,8 @@ class Trainer(pl.Trainer):
         if train:
             super().__init__(
                 fast_dev_run=self.__args__.dev,
-                accelerator='gpu' if abs(self.__args__.gpus) > 0 else 'cpu',
-                devices=self.__args__.gpus,
+                accelerator='cpu' if abs(self.__args__.gpus) == 0 else 'gpu',
+                devices=max(1, self.__args__.gpus),
                 log_every_n_steps=self.__args__.log_every_n_steps,
                 overfit_batches=self.__args__.overfit,
                 precision=self.__args__.precision,
