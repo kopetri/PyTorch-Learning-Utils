@@ -22,7 +22,7 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--early_stop_patience', default=0, type=int, help='Stop training after n epochs with ne val_loss improvement.')
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
-        self.parser.add_argument('--log_model', default=1, type=int, help='Enable model logging to WandB.')
+        self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
         self.__initialized__ = False
         self.__args__ = None
 
@@ -58,7 +58,7 @@ class Trainer(pl.Trainer):
         if self.__args__.name is None or self.__args__.dev:
             logger = None
         else:
-            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.__args__.name, log_model=self.__args__.log_model)
+            logger = pl.loggers.WandbLogger(project=self.project_name, name=self.__args__.name, log_model=self.__args__.save_code_base)
         ###########################################################################
 
         #################### ADD CALLBACKS ########################################

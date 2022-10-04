@@ -1,5 +1,7 @@
 from argparse import Namespace
 import pytorch_lightning as pl
+from pathlib import Path
+from zipfile import ZipFile
 
 class LightningModule(pl.LightningModule):
     def __init__(self, opt=None, **kwargs):
@@ -31,6 +33,18 @@ class LightningModule(pl.LightningModule):
                 self.logger.log_image(key=key, images=images, **kwargs)
             else:
                 print("Warning - cannot log image. Please use a WandbLogger!")
+
+    def on_save_checkpoint(self, checkpoint) -> None:
+        if not (isinstance(self.logger, pl.loggers.WandbLogger) and self.opt.save_code_base): return
+        path = Path(".", self.logger.experiment.project, self.logger.experiment.id, "code")
+        zipfile = path/"code.zip"
+        if not zipfile.exists():
+            path.mkdir(parents=True, exist_ok=True)
+            code_base = [file for file in Path(".").glob("**/*") if file.suffix == ".py" and not any([f in file.as_posix() for f in ["venv", "wandb", "lightning_log"]])]
+            with ZipFile(zipfile.as_posix(), "w") as codezip:
+                for code in code_base:
+                    codezip.write(code)
+            print("Saved code base to ", zipfile.as_posix())
 
     def forward(self, batch, batch_idx, split):
         raise NotImplementedError()
