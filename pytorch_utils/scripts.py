@@ -3,7 +3,6 @@ import random
 import torch
 from argparse import ArgumentParser
 import pytorch_lightning as pl
-from checkpoint.code_snapshot import CodeSnapshot
 
 class Trainer(pl.Trainer):
     def __init__(self, project_name):
@@ -63,8 +62,6 @@ class Trainer(pl.Trainer):
 
         #################### ADD CALLBACKS ########################################
         callbacks = []
-
-        #callbacks += [CodeSnapshot(filetype=[".py"])]
 
         if self.__args__.learning_rate_decay and logger:
             callbacks += [pl.callbacks.lr_monitor.LearningRateMonitor()]
