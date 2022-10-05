@@ -22,6 +22,8 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
         self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
+        self.parser.add_argument('--checkpoint_metric', default='valid_loss', type=str, help='Metric to use for saving checkpoints.')
+        self.parser.add_argument('--mode', default='min', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
         self.__initialized__ = False
         self.__args__ = None
 
@@ -69,18 +71,18 @@ class Trainer(pl.Trainer):
         callbacks += [pl.callbacks.ModelCheckpoint(
             verbose=True,
             save_top_k=1,
-            filename='{epoch}-{valid_loss}',
-            monitor='valid_loss',
-            mode='min'
+            filename='{epoch}-'+'{'+self.opt.checkpoint_metric+'}',
+            monitor=self.opt.checkpoint_metric,
+            mode=self.opt.mode
         )]
 
         if self.__args__.early_stop_patience > 0:
             callbacks += [pl.callbacks.EarlyStopping(
-                monitor='valid_loss',
+                monitor=self.opt.checkpoint_metric,
                 min_delta=0.00,
                 patience=self.__args__.early_stop_patience,
                 verbose=True,
-                mode='min'
+                mode=self.opt.mode
             )]
         ###########################################################################
 
