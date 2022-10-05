@@ -71,18 +71,18 @@ class Trainer(pl.Trainer):
         callbacks += [pl.callbacks.ModelCheckpoint(
             verbose=True,
             save_top_k=1,
-            filename='{epoch}-'+'{'+self.opt.checkpoint_metric+'}',
-            monitor=self.opt.checkpoint_metric,
-            mode=self.opt.mode
+            filename='{epoch}-'+'{'+self.__args__.checkpoint_metric+'}',
+            monitor=self.__args__.checkpoint_metric,
+            mode=self.__args__.mode
         )]
 
         if self.__args__.early_stop_patience > 0:
             callbacks += [pl.callbacks.EarlyStopping(
-                monitor=self.opt.checkpoint_metric,
+                monitor=self.__args__.checkpoint_metric,
                 min_delta=0.00,
                 patience=self.__args__.early_stop_patience,
                 verbose=True,
-                mode=self.opt.mode
+                mode=self.__args__.mode
             )]
         ###########################################################################
 
