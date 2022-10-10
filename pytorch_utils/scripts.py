@@ -24,11 +24,15 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
         self.parser.add_argument('--checkpoint_metric', default='valid_loss', type=str, help='Metric to use for saving checkpoints.')
         self.parser.add_argument('--mode', default='min', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
+        self.parser.add_argument('--auto_lr_find', action='store_true', help='Whether to enable auto learning rate.')
         self.__initialized__ = False
         self.__args__ = None
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
+
+    def get_accelerator(self):
+        return 'cpu' if abs(self.__args__.gpus) == 0 else 'gpu'
 
     def setup(self, train=True):
         self.__args__ = self.parser.parse_args()
@@ -89,7 +93,7 @@ class Trainer(pl.Trainer):
         if train:
             super().__init__(
                 fast_dev_run=self.__args__.dev,
-                accelerator='cpu' if abs(self.__args__.gpus) == 0 else 'gpu',
+                accelerator=self.get_accelerator(),
                 devices=max(1, self.__args__.gpus),
                 log_every_n_steps=self.__args__.log_every_n_steps,
                 overfit_batches=self.__args__.overfit,
@@ -97,10 +101,11 @@ class Trainer(pl.Trainer):
                 min_epochs=self.__args__.min_epochs,
                 max_epochs=self.__args__.max_epochs,
                 logger=logger,
-                callbacks=callbacks
+                callbacks=callbacks,
+                auto_lr_find=self.__args__.auto_lr_find
             )
         else:
-            super().__init__(accelerator='gpu', devices=1)
+            super().__init__(accelerator=self.get_accelerator(), devices=1)
         return self.__args__
 
 
