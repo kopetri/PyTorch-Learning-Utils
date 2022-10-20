@@ -9,7 +9,8 @@ class Trainer(pl.Trainer):
         self.project_name = project_name
         self.parser = ArgumentParser("Training of {}".format(project_name))
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
-        self.parser.add_argument('--gpus', default=-1, type=int, help='Number of gpus to use. default -1 using all gpus.')
+        self.parser.add_argument('--accelerator', default='gpu', type=float, help='chose the accelerator to use. cpu or gpu')
+        self.parser.add_argument('--devices', default=-1, nargs='+', type=int, help='Number of gpus to use. default -1 using all gpus.')
         self.parser.add_argument('--precision', default=16,   type=int, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
         self.parser.add_argument('--dev', action='store_true', help='Activate Lightning Fast Dev Run for debugging')
         self.parser.add_argument('--overfit', default=0, type=int, help='Set this to a number greater 0 for overfitting on few batches.')
@@ -31,9 +32,6 @@ class Trainer(pl.Trainer):
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
-    def get_accelerator(self):
-        return 'cpu' if abs(self.__args__.gpus) == 0 else 'gpu'
-
     def setup(self, train=True):
         self.__args__ = self.parser.parse_args()
     
@@ -43,7 +41,7 @@ class Trainer(pl.Trainer):
         
         # windows safe
         if sys.platform in ["win32"]:
-            self.__args__.worker = 0
+            self.__args__.worker = 6
 
         # Manage Random Seed
         if self.__args__.seed is None: # Generate random seed if none is given
@@ -93,8 +91,8 @@ class Trainer(pl.Trainer):
         if train:
             super().__init__(
                 fast_dev_run=self.__args__.dev,
-                accelerator=self.get_accelerator(),
-                devices=max(1, self.__args__.gpus),
+                accelerator=self.__args__.accelerator,
+                devices=self.__args__.devices,
                 log_every_n_steps=self.__args__.log_every_n_steps,
                 overfit_batches=self.__args__.overfit,
                 precision=self.__args__.precision,
