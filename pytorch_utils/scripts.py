@@ -103,7 +103,7 @@ class Trainer(pl.Trainer):
                 auto_lr_find=self.__args__.auto_lr_find
             )
         else:
-            super().__init__(accelerator=self.get_accelerator(), devices=1)
+            super().__init__(accelerator=self.__args__.accelerator, devices=self.__args__.devices)
         return self.__args__
 
 
