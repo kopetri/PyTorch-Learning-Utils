@@ -9,6 +9,7 @@ class LightningModule(pl.LightningModule):
         if opt is None:
             # loaded from checkpoint
             self.opt = Namespace(**kwargs)
+            if "hparams" in self.opt: self.opt = self.opt.hparams # make compatible with old ckpts
         else:
             self.opt = opt
         # save hyperparameters to checkpoint

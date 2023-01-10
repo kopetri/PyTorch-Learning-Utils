@@ -2,6 +2,9 @@ from pathlib import Path
 import torch
 
 def parse_ckpt(path, return_first=True):
+    if Path(path).is_file():
+        print("Loading checkpoint: ", path)
+        return path
     ckpts = [p.as_posix() for p in Path(path).glob("**/*") if p.suffix == ".ckpt"]
     if return_first:
         ckpt = ckpts[0]
