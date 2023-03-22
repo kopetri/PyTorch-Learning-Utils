@@ -22,9 +22,10 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--early_stop_patience', default=0, type=int, help='Stop training after n epochs with ne val_loss improvement.')
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
+        self.parser.add_argument('--every_n_epochs', default=None, type=int, help='Interval for saving checkpoints.')
         self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
-        self.parser.add_argument('--checkpoint_metric', default='valid_loss', type=str, help='Metric to use for saving checkpoints.')
-        self.parser.add_argument('--mode', default='min', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
+        self.parser.add_argument('--checkpoint_metric', default=['valid_loss'], nargs='+', type=str, help='Metric to use for saving checkpoints.')
+        self.parser.add_argument('--mode', default=['min'], nargs='+', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
         self.parser.add_argument('--auto_lr_find', action='store_true', help='Whether to enable auto learning rate.')
         self.__initialized__ = False
         self.__args__ = None
@@ -73,10 +74,17 @@ class Trainer(pl.Trainer):
         callbacks += [pl.callbacks.ModelCheckpoint(
             verbose=True,
             save_top_k=1,
-            filename='{epoch}-'+'{'+self.__args__.checkpoint_metric+'}',
-            monitor=self.__args__.checkpoint_metric,
-            mode=self.__args__.mode
-        )]
+            filename='{epoch}-'+'{'+metric+'}',
+            monitor=metric,
+            mode=mode
+        ) for metric, mode in zip(self.__args__.checkpoint_metric, self.__args__.mode)]
+        
+        if self.__args__.every_n_epochs:
+            callbacks += [pl.callbacks.ModelCheckpoint(
+                verbose=True,
+                every_n_epochs=self.__args__.every_n_epochs,
+                filename='{epoch}'
+            )]
 
         if self.__args__.early_stop_patience > 0:
             callbacks += [pl.callbacks.EarlyStopping(
