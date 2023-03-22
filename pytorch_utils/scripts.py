@@ -108,10 +108,11 @@ class Trainer(pl.Trainer):
                 max_epochs=self.__args__.max_epochs,
                 logger=logger,
                 callbacks=callbacks,
-                auto_lr_find=self.__args__.auto_lr_find
+                auto_lr_find=self.__args__.auto_lr_find,
+                deterministic=True
             )
         else:
-            super().__init__(accelerator=self.__args__.accelerator, devices=self.__args__.devices)
+            super().__init__(accelerator=self.__args__.accelerator, devices=self.__args__.devices, deterministic=True)
         return self.__args__
 
 
