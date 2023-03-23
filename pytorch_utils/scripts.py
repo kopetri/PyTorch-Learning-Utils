@@ -82,6 +82,7 @@ class Trainer(pl.Trainer):
         if self.__args__.ckpt_every_n_epochs:
             callbacks += [pl.callbacks.ModelCheckpoint(
                 verbose=True,
+                save_top_k=-1,
                 every_n_epochs=self.__args__.ckpt_every_n_epochs,
                 filename='{epoch}'
             )]
