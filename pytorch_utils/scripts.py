@@ -23,6 +23,7 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--name', default=None, help='Name of the training run.')
         self.parser.add_argument('--log_every_n_steps', default=50, type=int, help='Interval for logging.')
         self.parser.add_argument('--ckpt_every_n_epochs', default=None, type=int, help='Interval for saving checkpoints.')
+        self.parser.add_argument('--ckpt_every_n_steps', default=None, type=int, help='Interval for saving checkpoints.')
         self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
         self.parser.add_argument('--checkpoint_metric', default=['valid_loss'], nargs='+', type=str, help='Metric to use for saving checkpoints.')
         self.parser.add_argument('--mode', default=['min'], nargs='+', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
@@ -85,6 +86,14 @@ class Trainer(pl.Trainer):
                 save_top_k=-1,
                 every_n_epochs=self.__args__.ckpt_every_n_epochs,
                 filename='{epoch}'
+            )]
+            
+        if self.__args__.ckpt_every_n_steps:
+            callbacks += [pl.callbacks.ModelCheckpoint(
+                verbose=True,
+                save_top_k=-1,
+                every_n_train_steps=self.__args__.ckpt_every_n_steps,
+                filename='{step}'
             )]
 
         if self.__args__.early_stop_patience > 0:
