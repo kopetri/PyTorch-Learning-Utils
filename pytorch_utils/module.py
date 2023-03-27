@@ -26,7 +26,6 @@ class LightningModule(pl.LightningModule):
         return self(batch, batch_idx, "test")
 
     def log_value(self, key, value, split, batch_size):
-        assert split in ["train", "valid", "test"]
         self.log("{split}_{key}".format(split=split, key=key), value, prog_bar=True, on_epoch=not split=="train", on_step=split=="train", batch_size=batch_size)
 
     def log_image(self, key, images, **kwargs):
