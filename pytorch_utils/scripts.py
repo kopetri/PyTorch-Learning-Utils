@@ -28,7 +28,6 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--save_code_base', default=1, type=int, help='Enable saving code base.')
         self.parser.add_argument('--checkpoint_metric', default=['valid_loss'], nargs='+', type=str, help='Metric to use for saving checkpoints.')
         self.parser.add_argument('--mode', default=['min'], nargs='+', type=str, help='If the checkpoint_metric needs to me minimized or maximized.')
-        self.parser.add_argument('--auto_lr_find', action='store_true', help='Whether to enable auto learning rate.')
         self.__initialized__ = False
         self.__args__ = None
 
@@ -120,7 +119,6 @@ class Trainer(pl.Trainer):
                 max_epochs=self.__args__.max_epochs,
                 logger=logger,
                 callbacks=callbacks,
-                auto_lr_find=self.__args__.auto_lr_find,
                 deterministic=True
             )
         else:
