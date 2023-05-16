@@ -2,7 +2,8 @@ import sys
 import random
 import torch
 from argparse import ArgumentParser
-import pytorch_lightning as pl
+import lightning as L
+import lightning.pytorch as pl
 
 class Trainer(pl.Trainer):
     def __init__(self, project_name):
@@ -48,7 +49,8 @@ class Trainer(pl.Trainer):
         # Manage Random Seed
         if self.__args__.seed is None: # Generate random seed if none is given
             self.__args__.seed = random.randrange(4294967295) # Make sure it's logged
-        pl.utilities.seed.seed_everything(self.__args__.seed, workers=True)
+        L.seed_everything(self.__args__.seed)
+        
 
         # append stats to hparameter file
         yaml = self.__args__.__dict__
