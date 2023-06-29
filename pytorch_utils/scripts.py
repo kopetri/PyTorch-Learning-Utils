@@ -119,7 +119,8 @@ class Trainer(pl.Trainer):
                 max_epochs=self.__args__.max_epochs,
                 logger=logger,
                 callbacks=callbacks,
-                deterministic=True
+                deterministic=True,
+                profiler='simple'
             )
         else:
             super().__init__(accelerator=self.__args__.accelerator, devices=self.__args__.devices, deterministic=True)
