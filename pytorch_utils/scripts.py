@@ -12,7 +12,7 @@ class Trainer(pl.Trainer):
         self.parser.add_argument('--seed', default=None, type=int, help='Random Seed')
         self.parser.add_argument('--accelerator', default='gpu', type=str, help='chose the accelerator to use. cpu or gpu')
         self.parser.add_argument('--devices', default=-1, nargs='+', type=int, help='Number of gpus to use. default -1 using all gpus.')
-        self.parser.add_argument('--precision', default=16,   type=int, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
+        self.parser.add_argument('--precision', default='16-mixed',   type=str, help='16 to use Mixed precision (AMP O2), 32 for standard 32 bit float training')
         self.parser.add_argument('--dev', action='store_true', help='Activate Lightning Fast Dev Run for debugging')
         self.parser.add_argument('--overfit', default=0, type=int, help='Set this to a number greater 0 for overfitting on few batches.')
         self.parser.add_argument('--profiler', default=None, type=str, help='Enable profiling by setting this to "simple" or "advanced"')
