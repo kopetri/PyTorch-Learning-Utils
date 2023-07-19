@@ -124,7 +124,10 @@ class Trainer(pl.Trainer):
                 profiler=self.__args__.profiler
             )
         else:
-            super().__init__(accelerator=self.__args__.accelerator, devices=self.__args__.devices, deterministic=True)
+            super().__init__(accelerator=self.__args__.accelerator,
+                             devices=self.__args__.devices,
+                             precision=self.__args__.precision,
+                             deterministic=True)
         return self.__args__
 
 
