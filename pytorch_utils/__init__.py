@@ -42,7 +42,10 @@ def generate_splits(directory, suffix, train=0.8, valid=0.05, test=0.15, shuffle
 def parse_ckpt(path, return_first=True):
     if Path(path).is_file():
         print("Loading checkpoint: ", path)
-        return path
+        if return_first:
+            return path
+        else:
+            return [path]
     ckpts = [p.as_posix() for p in Path(path).glob("**/*") if p.suffix == ".ckpt"]
     if return_first:
         ckpt = ckpts[0]
