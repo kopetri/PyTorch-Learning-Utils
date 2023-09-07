@@ -39,7 +39,7 @@ class Trainer(pl.Trainer):
         self.__args__ = self.parser.parse_args()
         args = vars(args)
         args.update(**kwargs)
-        args = Namespace(**args)
+        self.__args__ = Namespace(**args)
     
         if self.__args__.detect_anomaly:
             print("Enabling anomaly detection")
