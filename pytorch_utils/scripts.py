@@ -1,7 +1,7 @@
 import sys
 import random
 import torch
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import lightning as L
 import lightning.pytorch as pl
 
@@ -35,8 +35,11 @@ class Trainer(pl.Trainer):
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
-    def setup(self, train=True):
+    def setup(self, train=True, **kwargs):
         self.__args__ = self.parser.parse_args()
+        args = vars(args)
+        args.update(**kwargs)
+        args = Namespace(**args)
     
         if self.__args__.detect_anomaly:
             print("Enabling anomaly detection")
