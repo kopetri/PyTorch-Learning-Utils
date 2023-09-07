@@ -37,7 +37,7 @@ class Trainer(pl.Trainer):
 
     def setup(self, train=True, **kwargs):
         self.__args__ = self.parser.parse_args()
-        args = vars(args)
+        args = vars(self.__args__)
         args.update(**kwargs)
         self.__args__ = Namespace(**args)
     
