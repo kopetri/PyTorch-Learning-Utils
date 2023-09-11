@@ -103,12 +103,12 @@ class Trainer(pl.Trainer):
 
         if self.__args__.early_stop_patience > 0:
             callbacks += [pl.callbacks.EarlyStopping(
-                monitor=self.__args__.checkpoint_metric,
+                monitor=metric,
                 min_delta=0.00,
                 patience=self.__args__.early_stop_patience,
                 verbose=True,
-                mode=self.__args__.mode
-            )]
+                mode=mode
+            ) for metric, mode in zip(self.__args__.checkpoint_metric, self.__args__.mode)]
         ###########################################################################
 
         if train:
