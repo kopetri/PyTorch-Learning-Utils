@@ -15,12 +15,15 @@ class LightningModule(pl.LightningModule):
         # save hyperparameters to checkpoint
         self.save_hyperparameters(vars(self.opt))
         self.learning_rate = self.opt.learning_rate
+        self.validation_outputs = []
 
     def training_step(self, batch, batch_idx):
         return self(batch, batch_idx, "train")
 
     def validation_step(self, batch, batch_idx):
-        return self(batch, batch_idx, "valid")
+        outputs = self(batch, batch_idx, "valid")
+        self.validation_outputs.append(outputs)
+        return outputs
 
     def test_step(self, batch, batch_idx):
         return self(batch, batch_idx, "test")
