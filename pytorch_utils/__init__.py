@@ -39,7 +39,7 @@ def generate_splits(directory, suffix, train=0.8, valid=0.05, test=0.15, shuffle
     __write_files__(test_split,  Path(directory,  "test.txt"))
 
 
-def parse_ckpt(path, return_first=True):
+def parse_ckpt(path, return_first=True, pattern=None):
     if Path(path).is_file():
         print("Loading checkpoint: ", path)
         if return_first:
@@ -47,6 +47,8 @@ def parse_ckpt(path, return_first=True):
         else:
             return [path]
     ckpts = [p.as_posix() for p in Path(path).glob("**/*") if p.suffix == ".ckpt"]
+    if pattern:
+        ckpts = [ckpt for ckpt in ckpts if pattern in ckpt.stem]
     if return_first:
         ckpt = ckpts[0]
         print("Loading checkpoint: ", ckpt)
