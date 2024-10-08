@@ -124,13 +124,14 @@ class Trainer(pl.Trainer):
                 logger=logger,
                 callbacks=callbacks,
                 deterministic=True,
-                profiler=self.__args__.profiler
+                profiler=self.__args__.profiler,
+                **kwargs
             )
         else:
             super().__init__(accelerator=self.__args__.accelerator,
                              devices=self.__args__.devices,
                              precision=self.__args__.precision,
-                             deterministic=True)
+                             deterministic=True, **kwargs)
         return self.__args__
 
 
